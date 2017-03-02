@@ -1,13 +1,16 @@
 <?php
+
+namespace CWG\PagSeguro;
+
 /**
 * @package Library
 * @category Pagamento
 * @author Carlos W. Gama (carloswgama@gmail.com)
-* @license GPL 2.0
+* @license MIT
 * @version 1.0.0
 * Classe de pagamento de Recursivo/Assinaturas no PagSeguro
 */
-class Pagseguro {
+class PagSeguro {
 	
 	//===================================================
 	// 					URL
@@ -192,7 +195,7 @@ class Pagseguro {
 
 		//Problema Token do vendedor
 		if ($xml == 'Unauthorized') 
-			throw new Exception("Token inválido");
+			throw new \Exception("Token inválido");
 		
 
 		$xml = simplexml_load_string($xml);
@@ -204,7 +207,7 @@ class Pagseguro {
 			foreach ($xml as $erro) 
 				$erros[] = $erro->message;
 
-			throw new Exception(implode(", ", $erros));
+			throw new \Exception(implode(", ", $erros));
 		}
 
 		if (isset($xml->code)) 
@@ -234,7 +237,7 @@ class Pagseguro {
 
 		//Problema Token do vendedor
 		if ($xml == 'Unauthorized') {
-			throw new Exception("Token inválido");
+			throw new \Exception("Token inválido");
 		}
 
 		$xml = simplexml_load_string($xml);
@@ -246,7 +249,7 @@ class Pagseguro {
 			foreach ($xml as $erro) 
 				$erros[] = $erro->message;
 
-			throw new Exception(implode(", ", $erros));
+			throw new \Exception(implode(", ", $erros));
 		}
 
 		return ($xml->status == 'OK'? true : false);	
@@ -273,7 +276,7 @@ class Pagseguro {
 
 		//Problema Token do vendedor
 		if ($xml == 'Unauthorized') {
-			throw new Exception("Token inválido");
+			throw new \Exception("Token inválido");
 		}
 
 		$xml = simplexml_load_string($xml);
@@ -285,7 +288,7 @@ class Pagseguro {
 			foreach ($xml as $erro) 
 				$erros[] = $erro->message;
 
-			throw new Exception(implode(", ", $erros));
+			throw new \Exception(implode(", ", $erros));
 		}
 
 		if ($xml->code == $codePagSeguro)
@@ -321,7 +324,7 @@ class Pagseguro {
 
 		//Problema Token do vendedor
 		if ($xml == 'Unauthorized') {
-			throw new Exception("Token inválido");
+			throw new \Exception("Token inválido");
 		}
 
 		$xml = simplexml_load_string($xml);
@@ -333,7 +336,7 @@ class Pagseguro {
 			foreach ($xml as $erro) 
 				$erros[] = $erro->message;
 
-			throw new Exception(implode(", ", $erros));
+			throw new \Exception(implode(", ", $erros));
 		}
 
 		if (count($xml->totalPages)) {
@@ -380,7 +383,7 @@ class Pagseguro {
 			//Não achou 
 			return false;
 
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return false;
 		}
 	}
