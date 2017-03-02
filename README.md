@@ -22,10 +22,27 @@ No Sandbox para testes, seu token pode ser acessado em [Perfil de Integração >
 
 ![Token no Sandbox](http://carloswgama.com.br/pagseguro/pagseguro_gerar_token_sandbox.jpg)
 
+### Baixando o projeto
+
+Para usar esse projeto, basta baixar esse repositório em seu projeto e importar a classe em src/PagSeguro.php ou usar o composer que é o mais indicado:
+
+```
+composer require carloswgama/php-pagseguro:1.*
+```
+
+Caso seu projeto já possua um arquivo composer.json, você pode também adiciona-lo nas dependências require e rodar um composer install:
+```
+{
+    "require": {
+        "carloswgama/php-pagseguro": "1.*"
+    }
+}
+```
+
 ### Criando uma assinatura
 ``` php
 <?php
-require ("pagseguro.class.php");
+use CWG\PagSeguro\PagSeguro;
 
 $email = "carloswgama@gmail.com";
 $token = "33D43C3F884E4EB687C2C62BB92ECD6A";
@@ -48,15 +65,19 @@ $pagseguro->setRedirectURL('http://localhost/pagseguro/callback.php');
 //A pessoa é cobrada em quantos meses? 
 $pagseguro->setPeriodicidade(1);		
 //0 (WEEKLY - Semanalmente)	| 1 (MONTHLY - Mensalmente) | 2 (BIMONTHLY - Bimestralmente) | 3 (TRIMONTHLY - Trimestralmente) | 6 (SEMIANNUALLY - Semestralmente) | 12 (YEARLY - Anualmente)
+try {
+    $url = $pagseguro->gerarSolicitacaoPagSeguro();
+    print_r($url);	//URL para realizar pagamento
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
 
-$url = $pagseguro->gerarSolicitacaoPagSeguro();
-print_r($url);	//URL para realizar pagamento
 ```
 
 ### Buscando
 ``` php
 <?php
-require ("pagseguro.class.php");
+use CWG\PagSeguro\PagSeguro;
 
 $email = "carloswgama@gmail.com";
 $token = "33D43C3F884E4EB687C2C62BB92ECD6A";
@@ -66,6 +87,7 @@ $pagseguro = new PagSeguro($email, $token, $sandbox);
 
 $code = $_GET['code']; 
 
+try {
 //Consulta por CÓDIGO do PagSeguro
 print_r($pagseguro->consultarAssinatura($code));
 
@@ -74,12 +96,15 @@ print_r($pagseguro->consultarAssinaturaPeriodo('2016-06-13 00:00', '2016-06-14 1
 
 //Buscar código pelo valor passado na referencia
 echo $code = $pagseguro->getPreApprovalCodeByVenda("CWG002", '2016-06-14 00:00', '2016-06-14 17:30');
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
 ```
 
 ### Cancelando
 ``` php
 <?php
-require ("pagseguro.class.php");
+use CWG\PagSeguro\PagSeguro;
 
 $email = "carloswgama@gmail.com";
 $token = "33D43C3F884E4EB687C2C62BB92ECD6A";
@@ -88,10 +113,14 @@ $sandbox = true;
 $pagseguro = new PagSeguro($email, $token, $sandbox);
 
 $code = '5B87B45F7676F61CC42CFFA0175BF7AE';
-
-print_r($pagseguro->suspenderAssinatura($code));
+try {
+    print_r($pagseguro->suspenderAssinatura($code));
+} catch (Exception $e) {
+    echo $e->getMessage();
+} 
 ```
 ---
 **Autor:**  Carlos W. Gama *(carloswgama@gmail.com)*
+**Licença:** MIT
 
 Livre para usar, modificar como desejar e destribuir como quiser
