@@ -1,7 +1,7 @@
 {
     "name": "carloswgama/php-pagseguro",
-    "description": "Classe para realizar ASSINATURAS no PagSeguro",
-    "version": "2.0.0",
+    "description": "Classe para realizar pagamentos comuns e recorrentes no PagSeguro",
+    "version": "2.1.0",
     "license": "MIT",
     "authors": [
         {
