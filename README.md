@@ -36,10 +36,11 @@ Caso seu projeto já possua um arquivo composer.json, você pode também adicion
 ## Documentação do uso da classe
 
 [Documentação Pagamentos Recorrentes com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/assinatura)
+
 [Documentação Pagamentos comuns com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/compra)
 
 
-### Exemplos
+## Exemplos
 
 Abaixo segue apenas dois exemples do uso da Biblioteca
 
@@ -128,6 +129,7 @@ try {
 ```
 
 Nos links acima você poderá ver diversos exemples para criar plano, assinatura, compra, notificações... 
+
 ---
 **Autor:**  Carlos W. Gama *(carloswgama@gmail.com)*
 **Licença:** MIT
