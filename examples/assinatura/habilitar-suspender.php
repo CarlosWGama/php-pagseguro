@@ -1,8 +1,8 @@
 <?php
 //=============================================//
-//           Criando uma assinatura		       //
+//           Cancelando assinatura		       //
 //=============================================//
-require dirname(__FILE__)."/_autoload.class.php";
+require dirname(__FILE__)."/../_autoload.class.php";
 use CWG\PagSeguro\PagSeguroAssinaturas;
 
 $email = "carloswgama@gmail.com";
@@ -11,7 +11,10 @@ $sandbox = true;
 
 $pagseguro = new PagSeguroAssinaturas($email, $token, $sandbox);
 
-$codigoPlano = 'E488FBA13434E41114179FB619875F62';
-$url = $pagseguro->assinarPlanoCheckout($codigoPlano);
+$codePagSeguro = '1BA8C57CD4D4F3F114A8FFB47768EA2F';
 
-echo 'URL para o Checkout: ' . $url;
+try {
+    print_r($pagseguro->setHabilitarAssinatura($codePagSeguro, true));
+} catch (Exception $e) {
+    echo $e->getMessage();
+}

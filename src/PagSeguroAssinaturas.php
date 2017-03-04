@@ -7,7 +7,8 @@ namespace CWG\PagSeguro;
 * @category Pagamento
 * @author Carlos W. Gama (carloswgama@gmail.com)
 * @license MIT
-* @version 2.0.0
+* @version 2.1.0
+* @since 2.0.0
 * Classe de pagamento de Recursivo/Assinaturas no PagSeguro
 */
 class PagSeguroAssinaturas {
@@ -467,48 +468,6 @@ class PagSeguroAssinaturas {
 	// =================================================================
 	// Util
 	// =================================================================
-	/**
-	* Verifica se o periodo de renovação da cobrança é válido
-	* @access public
-	* @param $periodo int
-	* @return bool
-	*/
-	public function validarPeriodo($periodo) {
-		return in_array($periodo, array(0, 1, 2, 3, 6, 12));
-	}
-
-	/**
-	* Busca o Código do PagSeguro de uma compra especifica por sua referência
-	* @access public
-	* @param $vendaID string (referencia)
-	* @param $dataInicial string (Intervalo da compra)
-	* @param $dataFinal string (Intervalo da compra)
-	* @return string (Código do PagSeguro)
-	*/
-	public function getPreApprovalCodeByVenda($vendaID, $dataInicial = '', $dataFinal = '') {
-		try {
-			if (empty($dataInicial)) $dataInicial = date('Y-m-d 00:00');
-			if (empty($dataInicial)) $dataFinal = date('Y-m-d H:i');
-
-			$xml = $this->consultarAssinaturaPeriodo($dataInicial, $dataFinal);
-			$xml = json_decode(json_encode((array) $xml), true);
-			
-			if (empty($xml['preApprovals']))
-				return false; //Não há nada
-
-			foreach ($xml['preApprovals']['preApproval'] as $preApproval) {
-				if ($vendaID == $preApproval['name']) {
-					return $preApproval['code'];
-				}
-			}	
-			//Não achou 
-			return false;
-
-		} catch (\Exception $e) {
-			return false;
-		}
-	}
-
 	/**
 	* Formata a credêncial do pagseguro
 	* @access private

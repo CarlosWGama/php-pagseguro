@@ -1,7 +1,11 @@
 # PHP - Pagseguro V2
-Classe para realizar compras normais ou recorrentes no PagSeguro
+Classe para realizar compras sem recorrencia no PagSeguro
 
 *Para realizar compras recorrentes no PagSeguro como assinaturas, olhe os examples na página abaixo:*
+
+[Pagamentos Recorrentes com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/2.1.0/examples)
+
+[Documentação do PagSeguro Pagamento Padrão - Compra sem usar Classe](https://dev.pagseguro.uol.com.br/documentacao/pagamentos/pagamento-padrao)
 
 -----
 Esse código é exclusivos para assinaturas ou compras recursisvas e foi criado usando a API das documentações acima. 
@@ -33,18 +37,8 @@ Caso seu projeto já possua um arquivo composer.json, você pode também adicion
 }
 ```
 
-## Documentação do uso da classe
+## Criando uma compra
 
-[Documentação Pagamentos Recorrentes com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/assinatura)
-[Documentação Pagamentos comuns com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/compra)
-
-
-### Exemplos
-
-Abaixo segue apenas dois exemples do uso da Biblioteca
-
-
-### Criando uma compra simples
 ``` php
 <?php
 require_once(dirname(__FILE__).'/vendor/autoload.php');
@@ -79,55 +73,60 @@ try{
 }
 ``` 
 
-### Criando um plano de assinatura
+## Consultando Notificação
+
+Sempre que uma compra é realizada, ela envia uma notificação para o link que estiver configurando no ambiente do PagSeguro (Ou para o link que tenha sid informado no notificationURL no ato de criar a compra), com isso é possível acessar as informações da assinatura pelo código da notificação enviado para fazer ativar as funcionalidades em seu site para o cliente:
 
 ``` php
 <?php
 require_once(dirname(__FILE__).'/vendor/autoload.php');
-use CWG\PagSeguro\PagSeguroAssinaturas;
+use CWG\PagSeguro\PagSeguroCompras;
 
 $email = "carloswgama@gmail.com";
 $token = "33D43C3F884E4EB687C2C62BB92ECD6A";
 $sandbox = true;
 
-$pagseguro = new PagSeguroAssinaturas($email, $token, $sandbox);
+$pagseguro = new PagSeguroCompras($email, $token, $sandbox);
 
-//Cria um nome para o plano
-$pagseguro->setReferencia('Plano_CWG_01');
-
-//Cria uma descrição para o plano
-$pagseguro->setDescricao('Libera o acesso ao portal por 3 meses. A assinatura voltará a ser cobrada a cada 3 meses.');
-
-//Valor a ser cobrado a cada renovação
-$pagseguro->setValor(30.00);
-
-//De quanto em quanto tempo será realizado uma nova cobrança (MENSAL, BIMESTRAL, TRIMESTRAL, SEMESTRAL, ANUAL)
-$pagseguro->setPeriodicidade(PagSeguroAssinaturas::TRIMESTRAL);
-
-//=== Campos Opcionais ===//
-//Após quanto tempo a assinatura irá expirar após a contratação = valor inteiro + (DAYS||MONTHS||YEARS). Exemplo, após 5 anos
-$pagseguro->setExpiracao(5, 'YEARS');
-
-//URL para redicionar a pessoa do portal PagSeguro para uma página de cancelamento no portal
-$pagseguro->setURLCancelamento('http://carloswgama.com.br/pagseguro/not/cancelando.php');
-
-//Local para o comprador será redicionado após a compra com o código (code) identificador da assinatura
-$pagseguro->setRedirectURL('http://carloswgama.com.br/pagseguro/not/assinando.php');		
-
-//Máximo de pessoas que podem usar esse plano. Exemplo 10.000 pessoas podem usar esse plano
-$pagseguro->setMaximoUsuariosNoPlano(10000);
-
-//=== Cria o plano ===//
-try {
-    $codigoPlano = $pagseguro->criarPlano();
-    echo "O Código do seu plano para realizar assinaturas é: " . $codigoPlano;
-} catch (Exception $e) {
-    echo "Erro: " . $e->getMessage();
+//Caso seja uma notificação de compra (transaction)
+if ($_POST['notificationType'] == 'transaction') {
+    $codigo = $_POST['notificationCode']; //Recebe o código da notificação e busca as informações de como está a assinatura
+    $response = $pagseguro->consultarNotificacao($codigo);
+    print_r($response);die;
 }
-
 ```
+Para alterar a url de notificação basta acessar:
+[Sandbox: Perfis de Integração >> Vendedor >> Notificação de Transação](https://sandbox.pagseguro.uol.com.br/vendedor/configuracoes.html)
+[Produção: Minha Conta >> Preferências >> Integrações >> Notiifcação de Transação](https://pagseguro.uol.com.br/preferencias/integracoes.jhtml)
 
-Nos links acima você poderá ver diversos exemples para criar plano, assinatura, compra, notificações... 
+
+## Consultando Compra pelo Còdigo da Transação ou Pela Referencia
+
+``` php
+<?php
+require_once(dirname(__FILE__).'/vendor/autoload.php');
+use CWG\PagSeguro\PagSeguroCompras;
+
+$email = "carloswgama@gmail.com";
+$token = "33D43C3F884E4EB687C2C62BB92ECD6A";
+$sandbox = true;
+
+$pagseguro = new PagSeguroCompras($email, $token, $sandbox);
+
+echo "<h2>Consulta pelo código de Transação</h2>";
+//Pelo cóigo da transação
+$codigoTransacao = 'CF748673-0190-4B15-8ACA-A10192E7C1D4'; //È o código gerado no ato da compra pelo PagSeguro
+$response = $pagseguro->consultarCompra($codigoTransacao);
+print_r($response);
+
+echo "<br/><hr/>";
+
+echo "<h2>Consulta pelo código de Referencia</h2>";
+//Pelo Código da Referencia
+$referencia = 'CWG004'; //È o código gerado no seu site ao criar a solicitação de compra
+$response = $pagseguro->consultarCompraByReferencia($referencia);
+print_r($response);
+```
 ---
 **Autor:**  Carlos W. Gama *(carloswgama@gmail.com)*
 **Licença:** MIT

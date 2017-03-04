@@ -2,7 +2,7 @@
 //=============================================//
 //           Cancelando assinatura		       //
 //=============================================//
-require dirname(__FILE__)."/_autoload.class.php";
+require dirname(__FILE__)."/../_autoload.class.php";
 use CWG\PagSeguro\PagSeguroAssinaturas;
 
 $email = "carloswgama@gmail.com";
@@ -11,10 +11,6 @@ $sandbox = true;
 
 $pagseguro = new PagSeguroAssinaturas($email, $token, $sandbox);
 
-$codePagSeguro = '324CE6D30505CFB3344E1F8C5CFF9926';
-
-try {
-    print_r($pagseguro->cancelarAssinatura($codePagSeguro));
-} catch (Exception $e) {
-    echo $e->getMessage();
-}
+$codeAssinatura = '131F919E44449D62244DEFAA0FEB334C';
+$response = $pagseguro->consultaAssinatura($codeAssinatura);
+print_r($response);die;

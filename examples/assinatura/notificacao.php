@@ -2,7 +2,7 @@
 //=============================================//
 //           Cancelando assinatura		       //
 //=============================================//
-require dirname(__FILE__)."/_autoload.class.php";
+require dirname(__FILE__)."/../_autoload.class.php";
 use CWG\PagSeguro\PagSeguroAssinaturas;
 
 $email = "carloswgama@gmail.com";
