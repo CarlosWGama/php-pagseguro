@@ -11,6 +11,10 @@ $sandbox = true;
 
 $pagseguro = new PagSeguroAssinaturas($email, $token, $sandbox);
 
-$codeAssinatura = '131F919E44449D62244DEFAA0FEB334C';
-$response = $pagseguro->consultaAssinatura($codeAssinatura);
-print_r($response);die;
+$codePagSeguro = '1BA8C57CD4D4F3F114A8FFB47768EA2F';
+
+try {
+    print_r($pagseguro->setHabilitarAssinatura($codePagSeguro, true));
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
