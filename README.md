@@ -14,7 +14,7 @@ Para realizar assinatura do PagSeguro sem usar nenhuma classe, apenas através d
 -----
 Esse código é exclusivos para assinaturas ou compras recursisvas e foi criado usando a API das documentações acima. 
 
-### Gerando Token
+## Gerando Token
 
 Para gerar o Token da sua conta do PagSeguro, logar na conta, ir em [Minha Conta >> Preferências >> Integração](https://pagseguro.uol.com.br/preferencias/integracoes.jhtml) e solicar para gerar um token
 
@@ -24,7 +24,7 @@ No Sandbox para testes, seu token pode ser acessado em [Perfil de Integração >
 
 ![Token no Sandbox](http://carloswgama.com.br/pagseguro/pagseguro_gerar_token_sandbox.jpg)
 
-### Baixando o projeto
+## Baixando o projeto
 
 Para usar esse projeto, basta baixar esse repositório em seu projeto e importar a classe em src/PagSeguroAssinaturas.php ou usar o composer que é o mais indicado:
 
@@ -41,7 +41,7 @@ Caso seu projeto já possua um arquivo composer.json, você pode também adicion
 }
 ```
 
-### Criando um Plano
+## Criando um Plano
 
 A nova versão da API do PagSeguro usa e recomenda o uso de planos para as assinaturas. Nesse caso vamos criar um plano, onde uma ou mais pessoas podem realizar a assinatura
 
@@ -91,7 +91,7 @@ try {
 
 ```
 
-### Fazendo uma assinatura simples sem checkout transparente
+## Fazendo uma assinatura simples sem checkout transparente
 
 ``` php
 <?php
@@ -114,7 +114,7 @@ Este é o meio mais simples de criar uma assinatura, basta ter um plano já cria
 
 **Deste modo eu não recomendo o uso do checkout padrão para assinaturas caso precise identificar qual o cliente do seu sistema que está assinando. OU criar um plano diferente para cada cliente, de modo a poder identificar quem é o cliente pela referencia do plano**   
 
-### Fazendo assinatura com checkout transparente
+## Fazendo assinatura com checkout transparente
 
 O Checkout transparente é aquele que ocorre no próprio ambiente do serviço e não no PagSeguro. 
 
@@ -217,7 +217,7 @@ O campo pagseguro_cliente_hash e pagseguro_cartao_token são usados na solicita�
 
 Após ter em mão o token do cartão e o hash do cliente, você pode solicitar a assinatura normalmente. No exemplo acima esses dados foram enviado via ajax, mas use da melhor forma na sua aplicação.
 
-#Finalizando Assinatura
+### Concluindo a adesão a Assinatura
 ``` php
 <?php
 require_once(dirname(__FILE__).'/vendor/autoload.php');
@@ -262,7 +262,7 @@ Caso não possua alguma das informações acima, pode busca-lo na etapa anterior
 
 **O Código da assinatura é único paa cada assinatura. Com ele você pode buscar informações de quem é o cliente pela referencia ou o estatus da assinatura, então lembre-se de guarda-lo**
 
-### Consultando Notificação
+## Consultando Notificação
 
 Sempre que uma assinatura é criada ou renovada, ela envia uma notificação para o link que estiver configurando no ambiente do PagSeguro, com isso é possível acessar as informações da assinatura pelo código da notificação enviado para fazer ativar as funcionalidades em seu site para o cliente:
 
@@ -289,7 +289,7 @@ Para alterar a url de notificação basta acessar:
 [Produção: Minha Conta >> Preferências >> Integrações >> Notiifcação de Transação](https://pagseguro.uol.com.br/preferencias/integracoes.jhtml)
 
 
-### Consultando Assinatura
+## Consultando Assinatura
 
 Além da notificação você também pode consultar o estatus de uma assinatura direto pelo código da assinatura
 ``` php
@@ -310,7 +310,7 @@ print_r($response);
 Esse código também pode ser encontrado no ambiente do PagSeguro na seção de assinaturas ([Sandbox: Assinaturas>>Assinaturas](https://sandbox.pagseguro.uol.com.br/assinaturas.html) | [Produção: Minha Conta >> Pagamento Recorrentes >> Adesões](https://pagseguro.uol.com.br/pre-aprovacoes/lista.html))
 
 
-### Cancelando Assinatura
+## Cancelando Assinatura
 
 Cancela definitvamente a assinatura. Essa ação não pode ser desfeita
 
@@ -335,7 +335,7 @@ try {
 
 ```
 
-### Suspendendo Assinatura
+## Suspendendo Assinatura
 
 A suspensão é semelhante a cancelar uma assinatura, porém ela permite que a assinatura volte a ser habilitada.
 
@@ -360,7 +360,7 @@ try {
 
 ```
 
-### Habilita Assinatura Suspensa
+## Habilita Assinatura Suspensa
 
 Reativa assinatura suspensa
 
