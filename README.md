@@ -1,3 +1,6 @@
+[![Latest Stable Version](https://poser.pugx.org/carloswgama/php-pagseguro/v/stable)](https://packagist.org/packages/carloswgama/php-pagseguro)
+[![License](https://poser.pugx.org/carloswgama/php-pagseguro/license)](https://packagist.org/packages/carloswgama/php-pagseguro)
+
 # PHP - Pagseguro V2
 Classe para realizar compras normais ou recorrentes no PagSeguro
 
