@@ -298,7 +298,7 @@ class PagSeguroAssinaturas {
 		$curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+        @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 		$xml = curl_exec($curl);
@@ -699,7 +699,7 @@ class PagSeguroAssinaturas {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");  
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+        @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
 		if (!empty($data))
         	curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -727,7 +727,7 @@ class PagSeguroAssinaturas {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");  
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+        @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
 		if (!empty($data))
         	curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);

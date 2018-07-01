@@ -54,7 +54,7 @@ echo $js['completo'];
             token: $('#pagseguro_cartao_token').val()
         };
         
-        $.post('http://localhost/pagseguro/examples/assinando2.php', data, function(response) {
+        $.post('http://localhost/pagseguro/examples/assinatura/assinando2.php', data, function(response) {
             alert(response);
         });
     }

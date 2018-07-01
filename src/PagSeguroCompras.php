@@ -488,12 +488,11 @@ class PagSeguroCompras {
 	*/
 	private function post($url, $dados = array()) {
 		$dados = array_merge($this->getCredenciais(), $dados);
-
 		$curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");  
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+        @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($dados));
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
