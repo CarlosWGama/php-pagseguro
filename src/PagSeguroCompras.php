@@ -126,6 +126,7 @@ class PagSeguroCompras {
 	 */
 	private $parcelaLimit = '';
 
+
 	// ================================================================
 	// API Assinatura PagSeguro
 	// ================================================================
@@ -260,6 +261,7 @@ class PagSeguroCompras {
 		$dados['currency'] 		= 'BRL';
 		
 		if (isset($this->parcelaLimit)){
+
 			$dados['paymentMethodGroup1'] = 'CREDIT_CARD';
 			$dados['paymentMethodConfigKey1_1']	= 'MAX_INSTALLMENTS_LIMIT';
 			$dados['paymentMethodConfigValue1_1'] = $this->parcelaLimit;
@@ -468,6 +470,7 @@ class PagSeguroCompras {
 	 * @param $parcelaLimit int
 	 */
 	public function setParcelaLimit($parcelaLimit) {
+
 		return $this->parcelaLimit = $parcelaLimit;
 	}
 
