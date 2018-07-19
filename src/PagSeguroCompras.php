@@ -118,6 +118,13 @@ class PagSeguroCompras {
 	* @var string
 	*/
 	private $token;
+	
+	/**
+	 * Onde será setado o valor de Limite para Parcelamento
+	 * @access private
+	 * @var int
+	 */
+	private $parcelaLimit = '';
 
 	// ================================================================
 	// API Assinatura PagSeguro
@@ -251,6 +258,12 @@ class PagSeguroCompras {
 		//Dados da compra
 		$dados['reference']		= $this->referencia;
 		$dados['currency'] 		= 'BRL';
+		
+		if (isset($this->parcelaLimit)){
+			$dados['paymentMethodGroup1'] = 'CREDIT_CARD';
+			$dados['paymentMethodConfigKey1_1']	= 'MAX_INSTALLMENTS_LIMIT';
+			$dados['paymentMethodConfigValue1_1'] = $this->parcelaLimit;
+		}
 
 		$response = $this->post($this->getURLAPI('v2/checkout'), $dados);
 
@@ -449,6 +462,13 @@ class PagSeguroCompras {
 	*/
 	public function setNotificationURL($url) {
 		$this->notificationURL = $url;
+	}
+	
+	/**
+	 * @param $parcelaLimit int
+	 */
+	public function setParcelaLimit($parcelaLimit) {
+		return $this->parcelaLimit = $parcelaLimit;
 	}
 
 	/********** REST ******************/
