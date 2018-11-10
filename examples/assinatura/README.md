@@ -68,10 +68,10 @@ $pagseguro->setValor(30.00);
 //De quanto em quanto tempo será realizado uma nova cobrança (MENSAL, BIMESTRAL, TRIMESTRAL, SEMESTRAL, ANUAL)
 $pagseguro->setPeriodicidade(PagSeguroAssinaturas::TRIMESTRAL);
 
-//=== Campos Opcionais ===//
 //Após quanto tempo a assinatura irá expirar após a contratação = valor inteiro + (DAYS||MONTHS||YEARS). Exemplo, após 5 anos
 $pagseguro->setExpiracao(5, 'YEARS');
 
+//=== Campos Opcionais ===//
 //URL para redicionar a pessoa do portal PagSeguro para uma página de cancelamento no portal
 $pagseguro->setURLCancelamento('http://carloswgama.com.br/pagseguro/not/cancelando.php');
 
