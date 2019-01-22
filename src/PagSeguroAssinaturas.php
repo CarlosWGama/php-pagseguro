@@ -12,7 +12,7 @@ namespace CWG\PagSeguro;
 * Classe de pagamento de Recursivo/Assinaturas no PagSeguro
 */
 class PagSeguroAssinaturas {
-	
+
 	//===================================================
 	// 					URL
 	//===================================================
@@ -118,7 +118,7 @@ class PagSeguroAssinaturas {
 	);
 
 	/**
-	* Um ID qualquer para identificar qual é a compra no sistema 
+	* Um ID qualquer para identificar qual é a compra no sistema
 	* @access private
 	* @var string
 	*/
@@ -200,6 +200,12 @@ class PagSeguroAssinaturas {
 	*/
 	private $URLCancelamento = '';
 
+	/**
+	* Período de teste, em dias. A recorrência mantém o status de iniciada durante o período de testes, de modo que a primeira cobrança só ocorrerá após esse período, permitindo que a recorrência se torne ativa. No caso de pagamento pré-pago, a cobrança se dá imediatamente após o fim do período de testes; no caso de pagamento pós-pago, a cobrança ocorre após o período de cobrança somado ao período de testes.
+	* @var integer
+	*/
+	private $trial = '';
+
 
 	/**
 	* Informa o máximo de usuários que podem usar o plano (Opcional | Deixar 0 para nõa ter limite)
@@ -209,13 +215,13 @@ class PagSeguroAssinaturas {
 	private $maximoUsuarios = 0;
 
 
-	/** 
+	/**
 	* Headers para acesso a API do gerarSolicitacaoPagSeguro
 	* @access private
 	* @var array
 	*/
 	private $headers = array(
-		'Content-Type: application/json', 
+		'Content-Type: application/json',
 		'Accept: application/vnd.pagseguro.com.br.v3+json;charset=ISO-8859-1'
 	);
 
@@ -256,32 +262,35 @@ class PagSeguroAssinaturas {
 	* Criar um novo plano
 	*/
 	public function criarPlano() {
-		
+
 		//Dados da assinatura
-		$dados['reference']							= $this->referencia;
-		$dados['preApproval']['charge'] 			= 'auto';
-		$dados['preApproval']['name']				= $this->referencia;
-		$dados['preApproval']['details']			= $this->descricao;
-		$dados['preApproval']['amountPerPayment']	= $this->valor;
-		$dados['preApproval']['period']				= $this->periodicidade;
-		$dados['preApproval']['expiration']			= $this->expiracao;
-		
+		$dados['reference']						  = $this->referencia;
+		$dados['preApproval']['charge'] 		  = 'auto';
+		$dados['preApproval']['name']			  = $this->referencia;
+		$dados['preApproval']['details']		  = $this->descricao;
+		$dados['preApproval']['amountPerPayment'] = $this->valor;
+		$dados['preApproval']['period']			  = $this->periodicidade;
+		$dados['preApproval']['expiration']		  = $this->expiracao;
+
 		//Opcionais
-		if (!empty($this->URLCancelamento)) 
-			$dados['preApproval']['cancelURL']		= $this->URLCancelamento;
-		
-		if (!empty($this->redirectURL)) 
-			$dados['redirectURL']	= $this->redirectURL;
+		if (!empty($this->trial))
+			$dados['preApproval']['trialPeriodDuration'] = $this->trial;
 
-		// if (!empty($this->notificationURL)) 
+		if (!empty($this->URLCancelamento))
+			$dados['preApproval']['cancelURL'] = $this->URLCancelamento;
+
+		if (!empty($this->redirectURL))
+			$dados['redirectURL'] = $this->redirectURL;
+
+		// if (!empty($this->notificationURL))
 			// $dados['notificationURL']	= $this->notificationURL;
-		
 
-		if ($this->maximoUsuarios > 0) 
-			$dados['maxUses']						= $this->maximoUsuarios;
+
+		if ($this->maximoUsuarios > 0)
+			$dados['maxUses'] = $this->maximoUsuarios;
 
 		$response = $this->post($this->getURLAPI() . 'pre-approvals/request', $dados);
-		
+
 		if ($response['http_code'] == 200) {
 			return $response['body']['code'];
 		} else {
@@ -290,7 +299,7 @@ class PagSeguroAssinaturas {
 		}
 	}
 
-	/** Cria um ID para comunicação com Checkout Transparente 
+	/** Cria um ID para comunicação com Checkout Transparente
 	* @return id string
 	*/
 	public function iniciaSessao() {
@@ -302,7 +311,7 @@ class PagSeguroAssinaturas {
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 		$xml = curl_exec($curl);
-		curl_close($curl);		
+		curl_close($curl);
 
 		//Problema Token do vendedor
 		if ($xml == 'Unauthorized') {
@@ -322,7 +331,7 @@ class PagSeguroAssinaturas {
 		$javascript = array();
 
 		//Jquery
-		if ($importaJquery) 
+		if ($importaJquery)
 			$javascript['jquery'] = '<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="  crossorigin="anonymous"></script>';
 
 		//Sessão
@@ -375,8 +384,8 @@ class PagSeguroAssinaturas {
 
 		$javascript['completo'] = implode(' ', $javascript);
 		return $javascript;
-	}	
-	
+	}
+
 	/**
 	* Inicia um pedido de compra
 	* @access public
@@ -399,7 +408,7 @@ class PagSeguroAssinaturas {
 			return $response['body']['code'];
 		} else {
 			throw new \Exception(current($response['body']['errors']));
-		}	
+		}
 	}
 
 	/**
@@ -408,7 +417,7 @@ class PagSeguroAssinaturas {
 	public function assinarPlanoCheckout($planoCode) {
 		return $this->getURLPagamento() . $planoCode;
 	}
- 
+
 	/** Realiza uma consulta a notificação **/
 	public function consultarNotificacao($codePagSeguro) {
 		$response = $this->get($this->getURLAPI() . 'pre-approvals/notifications/' . $codePagSeguro);
@@ -430,7 +439,7 @@ class PagSeguroAssinaturas {
 			throw new \Exception(current($response['body']['errors']));
 		}
 	}
- 
+
 	/**
 	* Cancela a assinatura
 	* @access public
@@ -454,9 +463,9 @@ class PagSeguroAssinaturas {
 	* @param $habilitar bool
 	*/
 	public function setHabilitarAssinatura($codePagSeguro, $habilitar = true) {
-		$dados['status'] = ($habilitar? 'ACTIVE' : 'SUSPENDED'); 
+		$dados['status'] = ($habilitar? 'ACTIVE' : 'SUSPENDED');
 		$response = $this->put($this->getURLAPI() . 'pre-approvals/' . $codePagSeguro . '/status', $dados);
-		
+
 		if ($response['http_code'] == 204) {
 			return true;
 		} else {
@@ -464,7 +473,7 @@ class PagSeguroAssinaturas {
 		}
 	}
 
-	
+
 	// =================================================================
 	// Util
 	// =================================================================
@@ -500,7 +509,7 @@ class PagSeguroAssinaturas {
 	// =================================================================
 	// GET e SET
 	// =================================================================
-	 
+
 	/**
 	* @param $emailCliente string
 	*/
@@ -508,26 +517,33 @@ class PagSeguroAssinaturas {
 	    return $this->cliente['email'] = $emailCliente;
 	}
 
-	 
+
 	/**
 	* @param $referencia string
 	*/
 	public function setReferencia($referencia) {
 	    return $this->referencia = $referencia;
 	}
-	 
+
 	/**
 	* @param $razao string
 	*/
 	public function setDescricao($descricao) {
 	    return $this->descricao = $descricao;
 	}
-	 
+
 	/**
 	* @param $valor float
 	*/
 	public function setValor($valor) {
 	    return $this->valor = number_format($valor, 2, '.', '');
+	}
+
+	/**
+	* @param $trial integer | max 100
+	*/
+	public function setTrial($trial) {
+		return $this->trial = intval($trial);
 	}
 
 	/**
@@ -542,7 +558,7 @@ class PagSeguroAssinaturas {
 
 	    return $this->periodicidade;
 	}
-	 
+
 	/**
 	* @param $redirectURL string
 	*/
@@ -556,7 +572,7 @@ class PagSeguroAssinaturas {
 	public function setNotificationURL($url) {
 		$this->notificationURL = $url;
 	}
-	
+
 	/**
 	* @param $preApprovalCode string
 	*/
@@ -594,7 +610,7 @@ class PagSeguroAssinaturas {
 		$this->maximoUsuarios = intval($valor);
 	}
 
-	
+
 	/**
 	* @param $preApprovalCode string
 	*/
@@ -625,7 +641,7 @@ class PagSeguroAssinaturas {
 		$this->formaPagamento['creditCard']['holder']['birthDate'] = $ano;
 	}
 
-	
+
 	/** Seta o CPF do Cliente **/
 	public function setCPF($numero) {
 		$this->cliente['documents'][0]['value'] = $numero;
@@ -659,7 +675,7 @@ class PagSeguroAssinaturas {
 			'state'			=> $estado,
 			'country'		=> 'BRA',
 			'postalCode'	=> $cep
-		);		
+		);
 	}
 
 	/********** REST ******************/
@@ -697,7 +713,7 @@ class PagSeguroAssinaturas {
 
 		$curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");  
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
         @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
 		if (!empty($data))
@@ -725,7 +741,7 @@ class PagSeguroAssinaturas {
 
 		$curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");  
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
         @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
 		if (!empty($data))
