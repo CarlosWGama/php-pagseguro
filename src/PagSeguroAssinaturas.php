@@ -206,6 +206,13 @@ class PagSeguroAssinaturas {
 	*/
 	private $trial = '';
 
+	/**
+	* Endereço de IP de origem da adesão ao plano, relacionado ao assinante.
+	* @var string
+	* Formato: 4 números, de 0 a 255, separados por ponto (Ex: 127.0.0.1)
+	*/
+	private $ip = '';
+
 
 	/**
 	* Informa o máximo de usuários que podem usar o plano (Opcional | Deixar 0 para nõa ter limite)
@@ -623,6 +630,13 @@ class PagSeguroAssinaturas {
 	*/
 	public function setHashCliente($hash) {
 		$this->cliente['hash'] = $hash;
+	}
+
+	/**
+	* @param $ip string
+	*/
+	public function setIPCliente($ip) {
+		$this->cliente['ip'] = $ip;
 	}
 
 		/**
