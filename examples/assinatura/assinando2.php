@@ -12,7 +12,7 @@ $sandbox = true;
 $pagseguro = new PagSeguroAssinaturas($email, $token, $sandbox);
 
 //Nome do comprador igual a como esta no CARTÂO
-$pagseguro->setNomeCliente("CARLOS W GAMA");	
+$pagseguro->setNomeCliente("CARLOS W GAMA");
 //Email do comprovador
 $pagseguro->setEmailCliente("c73062863531198591643@sandbox.pagseguro.com.br");
 //Informa o telefone DD e número
@@ -28,9 +28,12 @@ $pagseguro->setHashCliente($_POST['hash']);
 //Informa o Token do Cartão de Crédito gerado na etapa anterior (assinando.php)
 $pagseguro->setTokenCartao($_POST['token']);
 //Código usado pelo vendedor para identificar qual é a compra
-$pagseguro->setReferencia("CWG004");	
+$pagseguro->setReferencia("CWG004");
 //Plano usado (Esse código é criado durante a criação do plano)
 $pagseguro->setPlanoCode('E488FBA13434E41114179FB619875F62');
+//No ambiente de testes funciona normalmente sem o IP, no ambiente "real", mesmo na documentação falando que é opcional, precisei passar o IP ($_SERVER['HTTP_CLIENT_IP'];) do cliente para finalizar corretamente a assinatura
+// https://comunidade.pagseguro.uol.com.br/hc/pt-br/community/posts/360001810594-Pagamento-Recorrente-Cancelado- (o erro e a solução encontrada)
+$pagseguro->setIPCliente('127.0.0.1');
 
 try{
     $codigo = $pagseguro->assinaPlano();
