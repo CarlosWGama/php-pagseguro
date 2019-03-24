@@ -179,7 +179,7 @@ Os dados serão enviados para a próxima página, que será mostrado na seção 
 | Atributo  | Dado |
 |-----------|-------------------------------------------------------------------------------|
 | success   | TRUE ou FALSE                                                                 |
-| metodo    | cartao, boleto, debito                                                        |
+| method    | cartao, boleto, debito                                                        |
 | url       | Uma URL para pagamento em caso de boleto ou debito                            |
 | status    | O status da compra em caso de cartão (Olhar os status da compra no pagseguro) |
 | message   | Uma mensagem em caso de erro                                                  |

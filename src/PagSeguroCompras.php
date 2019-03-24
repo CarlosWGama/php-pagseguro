@@ -471,11 +471,11 @@ class PagSeguroCompras extends PagSeguroBase {
 
 		if (isset($response->code)) {
 			if ($dados['paymentMethod'] == 'creditCard')
-				return json_encode(['success' => true, 'status' => (boolean)$response->status, 'metodo' => $metodo]);
+				return json_encode(['success' => true, 'status' => (boolean)$response->status, 'method' => $metodo]);
 			else
-				return json_encode(['success' => true, 'url' => (string)$response->paymentLink, 'metodo' => $metodo]); //link para o pagamento
+				return json_encode(['success' => true, 'url' => (string)$response->paymentLink, 'method' => $metodo]); //link para o pagamento
 		} else {
-				return json_encode(['success' => false, 'message' => (string)$response->error->message, 'metodo' => $metodo]); //link para o pagamento
+				return json_encode(['success' => false, 'message' => (string)$response->error->message, 'method' => $metodo]); //link para o pagamento
 		}	
 	}
 	
