@@ -465,11 +465,10 @@ class PagSeguroCompras extends PagSeguroBase {
 		$response = $this->post($this->getURLAPI('v2/transactions'), $dados);
 	
 		if (isset($response->code)) {
-
 			if ($dados['paymentMethod'] == 'creditCard')
-				return json_encode(['success' => true, 'status' => (boolean)$response->status]);
+				return json_encode(['success' => true, 'status' => (boolean)$response->status, 'metodo' => 'cartao']);
 			else
-				return json_encode(['success' => true, 'url' => (string)$response->paymentLink]); //link para o pagamento
+				return json_encode(['success' => true, 'url' => (string)$response->paymentLink, 'metodo' => ($dados['paymentMethod'] == 'eft' ? 'debito' : 'boleto')]); //link para o pagamento
 		} else {
 				return json_encode(['success' => false, 'message' => (string)$response->error->message]); //link para o pagamento
 		}	

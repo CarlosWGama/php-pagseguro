@@ -20,7 +20,7 @@ $pagseguro->setParcelasSemJuros(3); //Informa quantidade de parcelas sem juros
 $urlFinalizar = 'http://localhost/pagseguro/examples/compra/checkout-transparente/finalizar_compra.php';
 
 //JavaScript opcional para realizar ao receber os dados de retorno da URL final
-$jsOpcional = 'alert("Alerta do $jsOpcional"); if (response.success) alert("Concluido com sucesso");';
+$jsOpcional = 'alert("Alerta do $jsOpcional"); console.log(response); if (response.success) alert("Concluido com sucesso");';
 
 //Informa URL para completar a compra, JS (opcional) a ser feito e TRUE (OPCIONAL) caso queira importar JQuery
 $js = $pagseguro->preparaCheckoutTransparente($urlFinalizar, $jsOpcional, true);
