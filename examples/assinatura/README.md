@@ -1,9 +1,9 @@
-# PHP - Pagseguro V2
+# PHP - Pagseguro V3
 Classe para realizar ASSINATURAS no PagSeguro com e sem Checkout Transparente
 
 *Para realizar compras comum sem recorrencia, olhe os examples na página abaixo:*
 
-[Compra comum no PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/2.1.0/examples/compra)
+[Compra comum no PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/compra)
 
 Para realizar assinatura do PagSeguro sem usar nenhuma classe, apenas através da api REST use a documentação abaixo: 
 
@@ -29,14 +29,14 @@ No Sandbox para testes, seu token pode ser acessado em [Perfil de Integração >
 Para usar esse projeto, basta baixar esse repositório em seu projeto e importar a classe em src/PagSeguroAssinaturas.php ou usar o composer que é o mais indicado:
 
 ```
-composer require carloswgama/php-pagseguro:2.*
+composer require carloswgama/php-pagseguro
 ```
 
 Caso seu projeto já possua um arquivo composer.json, você pode também adiciona-lo nas dependências require e rodar um composer install:
 ```
 {
     "require": {
-        "carloswgama/php-pagseguro": "2.*"
+        "carloswgama/php-pagseguro": "3.*"
     }
 }
 ```
@@ -189,7 +189,7 @@ echo $js['completo']; //Importa todos os javascripts necessários
     }
 </script>
 ```
-Nesse exemplo acima, nós precisamos obrigatóriamente dos seguintes campos:
+Nesse exemplo acima, nós precisamos obrigatoriamente dos seguintes campos:
 
 | Campo ID                | Descrição                                           | Exemplo          |
 |-------------------------|-----------------------------------------------------|------------------|

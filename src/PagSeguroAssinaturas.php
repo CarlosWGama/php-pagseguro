@@ -1,55 +1,35 @@
 <?php
-
 namespace CWG\PagSeguro;
+
+use CWG\PagSeguro\PagSeguroBase;
 
 /**
 * @package Library
-* @category Pagamento
+* @category Assinatura
 * @author Carlos W. Gama (carloswgama@gmail.com)
 * @license MIT
-* @version 2.1.0
-* @since 2.0.0
+* @version 3.0.0
+* @since 3.0.0
 * Classe de pagamento de Recursivo/Assinaturas no PagSeguro
 */
-class PagSeguroAssinaturas {
+class PagSeguroAssinaturas extends PagSeguroBase {
 
-	//===================================================
-	// 					URL
-	//===================================================
-	/**
-	* URL para a API em produção
-	* @access private
-	* @var string
-	*/
-	private $urlAPI = 'https://ws.pagseguro.uol.com.br/';
-
+	//==================================================
+	//                     URL
+	//==================================================
 	/**
 	* URL para o pagamento em produção
-	* @access private
+	* @access protected
 	* @var string
 	*/
-	private $urlPagamento = 'https://pagseguro.uol.com.br/v2/pre-approvals/request.html?code=';
-
-	/**
-	* URL para a API em Sandbox
-	* @access private
-	* @var string
-	*/
-	private $urlAPISandbox = 'https://ws.sandbox.pagseguro.uol.com.br/';
+	protected $urlPagamento = 'https://pagseguro.uol.com.br/v2/pre-approvals/request.html?code=';
 
 	/**
 	* URL para o pagamento em Sandbox
-	* @access private
+	* @access protected
 	* @var string
 	*/
-	private $urlPagamentoSandbox = 'https://sandbox.pagseguro.uol.com.br/v2/pre-approvals/request.html?code=';
-
-	/**
-	* Verifica se é Sanbox ou em Produção
-	* @access private
-	* @var bool
-	*/
-	private $isSandbox = false;
+	protected $urlPagamentoSandbox = 'https://sandbox.pagseguro.uol.com.br/v2/pre-approvals/request.html?code=';
 
 	//===================================================
 	// 					Dados da Compra
@@ -118,25 +98,11 @@ class PagSeguroAssinaturas {
 	);
 
 	/**
-	* Um ID qualquer para identificar qual é a compra no sistema
-	* @access private
-	* @var string
-	*/
-	private $referencia = '';
-
-	/**
 	* Descricao da compra
 	* @access private
 	* @var string
 	*/
 	private $descricao = ' CWG ';
-
-	/**
-	* Valor cobrado
-	* @access private
-	* @var float
-	*/
-	private $valor = 0.00;
 
 	/**
 	* Periodicidade
@@ -153,19 +119,7 @@ class PagSeguroAssinaturas {
 	const SEMESTRAL = 'SEMIANNUALLY';
 	const ANUAL = 'YEARLY';
 
-	/**
-	* Link para onde a pessoa será redicionada após concluir a assinatura no Pagseguro
-	* @access private
-	* @var string (url)
-	*/
-	private $redirectURL = '';
 
-	/**
-	* Link para onde será enviada as notificações a cada alteração na compra
-	* @access private
-	* @var string (url)
-	*/
-	private $notificationURL = '';
 
 	/**
 	* Código do PagSeguro referente a assinatura
@@ -213,7 +167,6 @@ class PagSeguroAssinaturas {
 	*/
 	private $ip = '';
 
-
 	/**
 	* Informa o máximo de usuários que podem usar o plano (Opcional | Deixar 0 para nõa ter limite)
 	* @access private
@@ -232,37 +185,49 @@ class PagSeguroAssinaturas {
 		'Accept: application/vnd.pagseguro.com.br.v3+json;charset=ISO-8859-1'
 	);
 
-	//===================================================
-	// 					Credencias
-	//===================================================
-
-	/**
-	* Email do vendedor do PagSeguro
-	* @access private
-	* @var string
-	*/
-	private $email;
-
-	/**
-	* token do vendedor do PagSeguro
-	* @access private
-	* @var string
-	*/
-	private $token;
-
 	// ================================================================
 	// API Assinatura PagSeguro
 	// ================================================================
+	
+
 	/**
-	* Construtor
-	* @param $email string
-	* @param $token string
-	* @param isSandbox bool (opcional | Default false)
+	* Gera todo o JavaScript necessário
 	*/
-	public function __construct($email, $token, $isSandbox = false) {
-		$this->email 		= $email;
-		$this->token 		= $token;
-		$this->isSandbox 	= $isSandbox;
+	public function preparaCheckoutTransparente($importaJquery = false) {
+		//Recupera o JavaScript padrão para assinatura e compra 
+		$javascript = $this->preparaCheckout($importaJquery);
+
+		//Obter token do Cartão
+		$javascript['cartao_token'] = "
+		<input type='hidden' id='pagseguro_cartao_token' />
+		<script type='text/javascript'>
+			function PagSeguroBuscaToken() {
+				PagSeguroDirectPayment.createCardToken({
+					cardNumber: $('#pagseguro_cartao_numero').val(),
+					brand: $('#pagseguro_cartao_bandeira').val(),
+					cvv: $('#pagseguro_cartao_cvv').val(),
+					expirationMonth: $('#pagseguro_cartao_mes').val(),
+					expirationYear: $('#pagseguro_cartao_ano').val(),
+					success: function(response) { console.log('Token: ' + response.card.token); $('#pagseguro_cartao_token').val(response.card.token)},
+					error: function(response) { console.log(response); },
+				});
+			}
+		</script>";
+
+		//Obter bandeira
+		$javascript['cartao_bandeira'] = "
+			<input type='hidden' id='pagseguro_cartao_bandeira' />
+			<script type='text/javascript'>
+				function PagSeguroBuscaBandeira() {
+					PagSeguroDirectPayment.getBrand({cardBin: $('#pagseguro_cartao_numero').val(),
+						success: function(response) { console.log('Bandeira: ' + response.brand.name); $('#pagseguro_cartao_bandeira').val(response.brand.name)},
+						error: function(response) { console.log(response); },
+					});
+				}
+			</script>";
+
+		$javascript['completo'] = implode(' ', $javascript);
+		return $javascript;
 	}
 
 	/**
@@ -296,7 +261,7 @@ class PagSeguroAssinaturas {
 		if ($this->maximoUsuarios > 0)
 			$dados['maxUses'] = $this->maximoUsuarios;
 
-		$response = $this->post($this->getURLAPI() . 'pre-approvals/request', $dados);
+		$response = $this->post($this->getURLAPI('pre-approvals/request'), $dados);
 
 		if ($response['http_code'] == 200) {
 			return $response['body']['code'];
@@ -304,93 +269,6 @@ class PagSeguroAssinaturas {
 			print_r($response);die;
 			throw new \Exception(current($response['body']['errors']));
 		}
-	}
-
-	/** Cria um ID para comunicação com Checkout Transparente
-	* @return id string
-	*/
-	public function iniciaSessao() {
-		$url = $this->getURLAPI().'v2/sessions/' . $this->getCredenciais();
-		$curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        @curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-		$xml = curl_exec($curl);
-		curl_close($curl);
-
-		//Problema Token do vendedor
-		if ($xml == 'Unauthorized') {
-			throw new \Exception("Token inválido");
-		}
-
-		$xml = simplexml_load_string($xml);
-		return $xml->id;
-	}
-
-	/**
-	* GEra todo o JavaScript necessário
-	*/
-	public function preparaCheckoutTransparente($importaJquery = false) {
-		$sessionID = $this->iniciaSessao();
-
-		$javascript = array();
-
-		//Jquery
-		if ($importaJquery)
-			$javascript['jquery'] = '<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="  crossorigin="anonymous"></script>';
-
-		//Sessão
-		if ($this->isSandbox)
-			$javascript['principal'] = '<script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
-		else
-			$javascript['principal'] = '<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>';
-
-		$javascript['principal'] .= '<script type="text/javascript">PagSeguroDirectPayment.setSessionId("' . $sessionID . '")</script>';
-
-		//Indentificação do comprador
-		$javascript['cliente_hash'] = "
-			<input type='hidden' id='pagseguro_cliente_hash'/>
-			<script type='text/javascript'>
-				function PagSeguroBuscaHashCliente() {
-					$('#pagseguro_cliente_hash').val(PagSeguroDirectPayment.getSenderHash());
-					console.log('Hash Cliente: ' + PagSeguroDirectPayment.getSenderHash());
-				}
-			</script> \n
-		";
-
-		//Obter bandeira
-		$javascript['bandeira'] = "
-			<input type='hidden' id='pagseguro_cartao_bandeira' />
-			<script type='text/javascript'>
-				function PagSeguroBuscaBandeira() {
-					PagSeguroDirectPayment.getBrand({cardBin: $('#pagseguro_cartao_numero').val(),
-						success: function(response) { console.log('Bandeira: ' + response.brand.name); $('#pagseguro_cartao_bandeira').val(response.brand.name)},
-						error: function(response) { console.log(response); },
-					});
-				}
-			</script>";
-
-		//Obter token do Cartão
-		$javascript['token'] = "
-		<input type='hidden' id='pagseguro_cartao_token' />
-		<script type='text/javascript'>
-			function PagSeguroBuscaToken() {
-				PagSeguroDirectPayment.createCardToken({
-					cardNumber: $('#pagseguro_cartao_numero').val(),
-					brand: $('#pagseguro_cartao_bandeira').val(),
-					cvv: $('#pagseguro_cartao_cvv').val(),
-					expirationMonth: $('#pagseguro_cartao_mes').val(),
-					expirationYear: $('#pagseguro_cartao_ano').val(),
-					success: function(response) { console.log('Token: ' + response.card.token); $('#pagseguro_cartao_token').val(response.card.token)},
-					error: function(response) { console.log(response); },
-				});
-			}
-		</script>";
-
-		$javascript['completo'] = implode(' ', $javascript);
-		return $javascript;
 	}
 
 	/**
@@ -409,7 +287,7 @@ class PagSeguroAssinaturas {
 		//Dados da compra
 		$dados['reference']		= $this->referencia;
 
-		$response = $this->post($this->getURLAPI() . 'pre-approvals/', $dados);
+		$response = $this->post($this->getURLAPI('pre-approvals/'), $dados);
 
 		if ($response['http_code'] == 200) {
 			return $response['body']['code'];
@@ -420,14 +298,20 @@ class PagSeguroAssinaturas {
 
 	/**
 	* Realiza assinatura do plano pelo ambiente checkout padrão
+	* @access public
+	* @param $planoCode | Código do plano no qual o usuário deveria ser redrecionado para o checkout
 	*/
 	public function assinarPlanoCheckout($planoCode) {
 		return $this->getURLPagamento() . $planoCode;
 	}
 
-	/** Realiza uma consulta a notificação **/
+	/** 
+	 * Realiza uma consulta a notificação
+	 * @access public
+	 * @param $codePagSeguro | Codigo da notificação enviada pelo pagaseguro
+	 **/
 	public function consultarNotificacao($codePagSeguro) {
-		$response = $this->get($this->getURLAPI() . 'pre-approvals/notifications/' . $codePagSeguro);
+		$response = $this->get($this->getURLAPI('pre-approvals/notifications/') . $codePagSeguro);
 
 		if ($response['http_code'] == 200) {
 			return $response['body'];
@@ -436,9 +320,13 @@ class PagSeguroAssinaturas {
 		}
 	}
 
-	/** Consulta uma assinatura **/
+	/** 
+	 * Consulta uma assinatura 
+	 * @access public
+	 * @param $codePagSeguro | Codigo unico da assinatura do cliente no plano
+	 **/
 	public function consultaAssinatura($codePagSeguro) {
-		$response = $this->get($this->getURLAPI() . 'pre-approvals/' . $codePagSeguro);
+		$response = $this->get($this->getURLAPI('pre-approvals/') . $codePagSeguro);
 
 		if ($response['http_code'] == 200) {
 			return $response['body'];
@@ -454,7 +342,7 @@ class PagSeguroAssinaturas {
 	* @return bool
 	*/
 	public function cancelarAssinatura($codePagSeguro) {
-		$response = $this->put($this->getURLAPI() . 'pre-approvals/' . $codePagSeguro . '/cancel');
+		$response = $this->put($this->getURLAPI('pre-approvals/' . $codePagSeguro . '/cancel'));
 
 		if ($response['http_code'] == 204) {
 			return true;
@@ -471,7 +359,7 @@ class PagSeguroAssinaturas {
 	*/
 	public function setHabilitarAssinatura($codePagSeguro, $habilitar = true) {
 		$dados['status'] = ($habilitar? 'ACTIVE' : 'SUSPENDED');
-		$response = $this->put($this->getURLAPI() . 'pre-approvals/' . $codePagSeguro . '/status', $dados);
+		$response = $this->put($this->getURLAPI('pre-approvals/' . $codePagSeguro . '/status'), $dados);
 
 		if ($response['http_code'] == 204) {
 			return true;
@@ -480,39 +368,6 @@ class PagSeguroAssinaturas {
 		}
 	}
 
-
-	// =================================================================
-	// Util
-	// =================================================================
-	/**
-	* Formata a credêncial do pagseguro
-	* @access private
-	* @return array(email, token)
-	*/
-	private function getCredenciais() {
-		$dados['email'] = $this->email;
-		$dados['token'] = $this->token;
-
-		return '?' . http_build_query($dados);
-	}
-
-	/**
-	* Busca a URL da API de acordo com a opção Sandbox
-	* @access private
-	* @return string url
-	*/
-	private function getURLAPI() {
-		return ($this->isSandbox ? $this->urlAPISandbox : $this->urlAPI);
-	}
-
-	/**
-	* Busca a URL de Pagamento de acordo com a opção Sandbox
-	* @access private
-	* @return string url
-	*/
-	private function getURLPagamento() {
-		return ($this->isSandbox ? $this->urlPagamentoSandbox : $this->urlPagamento);
-	}
 	// =================================================================
 	// GET e SET
 	// =================================================================
@@ -521,36 +376,32 @@ class PagSeguroAssinaturas {
 	* @param $emailCliente string
 	*/
 	public function setEmailCliente($emailCliente) {
-	    return $this->cliente['email'] = $emailCliente;
-	}
-
-
-	/**
-	* @param $referencia string
-	*/
-	public function setReferencia($referencia) {
-	    return $this->referencia = $referencia;
+		$this->cliente['email'] = $emailCliente;
+		return $this;
 	}
 
 	/**
 	* @param $razao string
 	*/
 	public function setDescricao($descricao) {
-	    return $this->descricao = $descricao;
+		$this->descricao = $descricao;
+		return $this;
 	}
 
 	/**
 	* @param $valor float
 	*/
 	public function setValor($valor) {
-	    return $this->valor = number_format($valor, 2, '.', '');
+		$this->valor = number_format($valor, 2, '.', '');
+		return $this;
 	}
 
 	/**
 	* @param $trial integer | max 100
 	*/
 	public function setTrial($trial) {
-		return $this->trial = intval($trial);
+		$this->trial = intval($trial);
+		return $this;
 	}
 
 	/**
@@ -563,28 +414,16 @@ class PagSeguroAssinaturas {
 		if (!in_array($this->periodicidade, array('WEEKLY', 'MONTHLY', 'BIMONTHLY', 'TRIMONTHLY', 'SEMIANNUALLY', 'YEARLY')))
 			$this->periodicidade = '-'; //Erro
 
-	    return $this->periodicidade;
-	}
-
-	/**
-	* @param $redirectURL string
-	*/
-	public function setRedirectURL($redirectURL) {
-	    return $this->redirectURL = $redirectURL;
-	}
-
-	/**
-	* @return string
-	*/
-	public function setNotificationURL($url) {
-		$this->notificationURL = $url;
+		$this->periodicidade;
+		return $this;
 	}
 
 	/**
 	* @param $preApprovalCode string
 	*/
 	public function setPreApprovalCode($preApprovalCode) {
-	    return $this->preApprovalCode = $preApprovalCode;
+		$this->preApprovalCode = $preApprovalCode;
+		return $this;
 	}
 
 	/**
@@ -600,6 +439,7 @@ class PagSeguroAssinaturas {
 			'value'	=> $periodo,
 			'unit'	=> $unidade
 		);
+		return $this;
 	}
 
 	/**
@@ -608,6 +448,7 @@ class PagSeguroAssinaturas {
 	*/
 	public function setURLCancelamento($url) {
 		$this->URLCancelamento = $url;
+		return $this;
 	}
 
 	/**
@@ -615,6 +456,7 @@ class PagSeguroAssinaturas {
 	*/
 	public function setMaximoUsuariosNoPlano($valor) {
 		$this->maximoUsuarios = intval($valor);
+		return $this;
 	}
 
 
@@ -622,7 +464,8 @@ class PagSeguroAssinaturas {
 	* @param $preApprovalCode string
 	*/
 	public function setPlanoCode($planoCode) {
-	    return $this->planoCode = $planoCode;
+		$this->planoCode = $planoCode;
+		return $this;
 	}
 
 	/**
@@ -630,6 +473,7 @@ class PagSeguroAssinaturas {
 	*/
 	public function setHashCliente($hash) {
 		$this->cliente['hash'] = $hash;
+		return $this;
 	}
 
 	/**
@@ -637,6 +481,7 @@ class PagSeguroAssinaturas {
 	*/
 	public function setIPCliente($ip) {
 		$this->cliente['ip'] = $ip;
+		return $this;
 	}
 
 		/**
@@ -645,6 +490,7 @@ class PagSeguroAssinaturas {
 	public function setNomeCliente($nomeCliente) {
 	    $this->cliente['name'] = $nomeCliente;
 		$this->formaPagamento['creditCard']['holder']['name'] = $nomeCliente;
+		return $this;
 	}
 
 	/**
@@ -653,6 +499,7 @@ class PagSeguroAssinaturas {
 	*/
 	public function setNascimentoCliente($ano) {
 		$this->formaPagamento['creditCard']['holder']['birthDate'] = $ano;
+		return $this;
 	}
 
 
@@ -660,6 +507,7 @@ class PagSeguroAssinaturas {
 	public function setCPF($numero) {
 		$this->cliente['documents'][0]['value'] = $numero;
 		$this->formaPagamento['creditCard']['holder']['documents'][0]['value'] = $numero;
+		return $this;
 	}
 
 	/**
@@ -672,11 +520,13 @@ class PagSeguroAssinaturas {
 
 		$this->formaPagamento['creditCard']['holder']['phone']['areaCode'] = $ddd;
 		$this->formaPagamento['creditCard']['holder']['phone']['number'] = $numero;
+		return $this;
 	}
 
 	/** Seta o token do Cartão **/
 	public function setTokenCartao($token) {
 		$this->formaPagamento['creditCard']['token'] = $token;
+		return $this;
 	}
 
 	public function setEnderecoCliente($rua, $numero, $complemento, $bairro, $cidade, $estado, $cep) {
@@ -690,6 +540,7 @@ class PagSeguroAssinaturas {
 			'country'		=> 'BRA',
 			'postalCode'	=> $cep
 		);
+		return $this;
 	}
 
 	/********** REST ******************/

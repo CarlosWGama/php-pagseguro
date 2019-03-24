@@ -1,14 +1,16 @@
-# PHP - Pagseguro V2
+# PHP - Pagseguro V3
 Classe para realizar compras sem recorrencia no PagSeguro
 
-*Para realizar compras recorrentes no PagSeguro como assinaturas, olhe os examples na página abaixo:*
+*Para realizar compras recorrentes no PagSeguro como assinaturas ou compras com checkout transparente, olhe os examples na página abaixo:*
 
-[Pagamentos Recorrentes com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/2.1.0/examples)
 
-[Documentação do PagSeguro Pagamento Padrão - Compra sem usar Classe](https://dev.pagseguro.uol.com.br/documentacao/pagamentos/pagamento-padrao)
+[Pagamentos com Checkout Transparente com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/compra/checkout-transparente)
+
+[Pagamentos Recorrentes com PagSeguro](https://github.com/CarlosWGama/php-pagseguro/tree/master/examples/assinatura)
 
 -----
-Esse código é exclusivos para assinaturas ou compras recursisvas e foi criado usando a API das documentações acima. 
+O código dessa seção serve para realizar compras com checkout no ambiente do PagSeguro.
+
 
 ## Gerando Token
 
@@ -25,14 +27,14 @@ No Sandbox para testes, seu token pode ser acessado em [Perfil de Integração >
 Para usar esse projeto, basta baixar esse repositório em seu projeto e importar a classe em src/PagSeguroAssinaturas.php ou usar o composer que é o mais indicado:
 
 ```
-composer require carloswgama/php-pagseguro:2.*
+composer require carloswgama/php-pagseguro
 ```
 
 Caso seu projeto já possua um arquivo composer.json, você pode também adiciona-lo nas dependências require e rodar um composer install:
 ```
 {
     "require": {
-        "carloswgama/php-pagseguro": "2.*"
+        "carloswgama/php-pagseguro": "3.*"
     }
 }
 ```
@@ -73,6 +75,50 @@ try{
 }
 ``` 
 
+## Criando uma compra com Lightbox
+
+O Lightbox é um recurso do PagSeguro que permite abrir o Checkout do PagSeguro dentro da própria página do site como um pop-up.
+
+![Token em produção](http://carloswgama.com.br/pagseguro/pagseguro_lightbox.jpg)
+
+
+Código:
+``` php
+<?php
+require dirname(__FILE__)."/../_autoload.class.php";
+use CWG\PagSeguro\PagSeguroCompras;
+
+$email = "carloswgama@gmail.com";
+$token = "33D43C3F884E4EB687C2C62BB92ECD6A";
+$sandbox = true;
+
+$pagseguro = new PagSeguroCompras($email, $token, $sandbox);
+
+//Nome do comprador (OPCIONAL)
+$pagseguro->setNomeCliente("CARLOS W GAMA");	
+//Email do comprovador (OPCIONAL)
+$pagseguro->setEmailCliente("c73062863531198591643@sandbox.pagseguro.com.br");
+//Código usado pelo vendedor para identificar qual é a compra (OPCIONAL)
+$pagseguro->setReferencia("CWG004");	
+//Adiciona os itens da compra (ID do ITEM, DESCRICAO, VALOR, QUANTIDADE)
+$pagseguro->adicionarItem('ITEM0001', 'Item 1', 10.00, 2);
+$pagseguro->adicionarItem('ITEM0002', 'Item 2', 15.50, 1);
+
+//JavaScript caso a compra seja realizada (OPCIONAL)
+$success = "window.location.href='obrigado.php'";
+
+//JavaScript caso o lightbox seja fechado sem concluir a compra (OPCIONAL)
+$abort = "window.location.href='index.php'";
+
+try{
+    $jsLightbox = $pagseguro->gerarLightbox($success, $abort);
+    echo $jsLightbox; //Executa o JavaScript do PagSeguro para abrir o LIghtbox
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+``` 
+
+
 ## Consultando Notificação
 
 Sempre que uma compra é realizada, ela envia uma notificação para o link que estiver configurando no ambiente do PagSeguro (Ou para o link que tenha sid informado no notificationURL no ato de criar a compra), com isso é possível acessar as informações da assinatura pelo código da notificação enviado para fazer ativar as funcionalidades em seu site para o cliente:
@@ -100,7 +146,7 @@ Para alterar a url de notificação basta acessar:
 [Produção: Minha Conta >> Preferências >> Integrações >> Notiifcação de Transação](https://pagseguro.uol.com.br/preferencias/integracoes.jhtml)
 
 
-## Consultando Compra pelo Còdigo da Transação ou Pela Referencia
+## Consultando Compra pelo Código da Transação ou Pela Referencia
 
 ``` php
 <?php
