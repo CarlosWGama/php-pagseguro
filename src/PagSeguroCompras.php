@@ -325,7 +325,7 @@ class PagSeguroCompras extends PagSeguroBase {
 							parcelas: parcelas[0],
 							parcelas_valor: parcelas[1]
 						};
-
+						console.log(data);
 						$.post('" . $urlCompletar . "', data, function(response) {
 							try { response = JSON.parse(response);} catch(e) {}
 							" . $jsSuccess . "
@@ -374,6 +374,8 @@ class PagSeguroCompras extends PagSeguroBase {
 							metodo: 'eft'
 						};
 
+						console.log(data);
+
 						$.post('" . $urlCompletar . "', data, function(response) {
 							try { response = JSON.parse(response);} catch(e) {}
 							
@@ -411,6 +413,7 @@ class PagSeguroCompras extends PagSeguroBase {
 							hash:  $('#pagseguro_cliente_hash').val(),
 							metodo: 'boleto'
 						};
+						console.log(data);
 
 						$.post('" . $urlCompletar . "', data, function(response) {
 							try { response = JSON.parse(response);} catch(e) {}
@@ -796,13 +799,15 @@ class PagSeguroCompras extends PagSeguroBase {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-		curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
+		@curl_setopt($curl, CURLOPT_SAFE_UPLOAD, false);
 		
 		$xml = curl_exec($curl);
 		curl_close($curl);
 		
 		if ($xml == 'Unauthorized') 
 			throw new \Exception("Falha na autenticação");
+		if ($xml == 'Not Found')
+			throw new \Exception("Não encontrado");
 		
 		$xml = simplexml_load_string($xml);
 		
@@ -832,6 +837,8 @@ class PagSeguroCompras extends PagSeguroBase {
 
 		if ($xml == 'Unauthorized') 
 			throw new \Exception("Falha na autenticação");
+		if ($xml == 'Not Found')
+			throw new \Exception("Não encontrado");
 
 		$xml = simplexml_load_string($xml);
 
