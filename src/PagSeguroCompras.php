@@ -298,7 +298,6 @@ class PagSeguroCompras extends PagSeguroBase {
 								
 								
 								console.log(bandeira);
-								console.log(response.installments);
 								response.installments[bandeira].forEach((p) => {
 									//Adiciona parcelas possíveis no SELECT
 									let texto = '(R$' + p.totalAmount + ') ' +  p.quantity + 'x de R$' + p.installmentAmount;
