@@ -29,7 +29,8 @@ $js = $pagseguro->preparaCheckoutTransparente($urlFinalizar, $jsOpcional, true);
 <h1>Cartão de Crédito</h1>
 <h2> Campos Obrigatórios </h2>
 <p>Número do Cartão</p>
-<input type="text" id="pagseguro_cartao_numero" value="4111111111111111"/>
+<!-- (OPCIONAL) A FUNÇÃO "PagSeguroAtualizaParcela()" pode ser chamada sempre que quiser atualizar o parcelamento dependendo do cartão -->
+<input type="text" id="pagseguro_cartao_numero" value="4111111111111111" onblur="PagSeguroAtualizaParcela()"/>
 
 <p>CVV do cartão</p>
 <input type="text" id="pagseguro_cartao_cvv" value="123"/>

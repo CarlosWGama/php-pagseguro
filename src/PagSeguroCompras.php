@@ -275,9 +275,11 @@ class PagSeguroCompras extends PagSeguroBase {
 				<input type='hidden' id='pagseguro_cartao_bandeira' />
 				<script type='text/javascript'>
 					function PagSeguroBuscaBandeira() {
-						PagSeguroDirectPayment.getBrand({cardBin: $('#pagseguro_cartao_numero').val(),
-							success: function(response) { console.log('Bandeira: ' + response.brand.name); $('#pagseguro_cartao_bandeira').val(response.brand.name)},
-							error: function(response) { console.log(response); },
+						return new Promise((resolve, reject) => {
+							PagSeguroDirectPayment.getBrand({cardBin: $('#pagseguro_cartao_numero').val(),
+								success: function(response) { console.log('Bandeira: ' + response.brand.name); $('#pagseguro_cartao_bandeira').val(response.brand.name); resolve(response.brand.name)},
+								error: function(response) { console.log(response); resolve('visa') },
+							});
 						});
 					}
 				</script>";
@@ -285,20 +287,29 @@ class PagSeguroCompras extends PagSeguroBase {
 			//Parcelas de cartão
 			$javascript['cartao_parcelamento'] = "
 			<script type='text/javascript'>
-				PagSeguroDirectPayment.getInstallments({
-					amount: " . $this->valor . ",
-					maxInstallmentNoInterest:  " . $this->checkoutTransparente['cartao']['noInterestInstallmentQuantity'] . ",
-					success: function(response) {
-						$('#pagseguro_cartao_parcela').html('');
+				function PagSeguroAtualizaParcela() {
+					PagSeguroBuscaBandeira().then(bandeira => {
 						
-						response.installments['visa'].forEach((p) => {
-							//Adiciona parcelas possíveis no SELECT
-							let texto = '(R$' + p.totalAmount + ') ' +  p.quantity + 'x de R$' + p.installmentAmount;
-							$('#pagseguro_cartao_parcela').append(new Option(texto, p.quantity+'-'+p.installmentAmount));	
+						PagSeguroDirectPayment.getInstallments({
+							amount: " . $this->valor . ",
+							maxInstallmentNoInterest:  " . $this->checkoutTransparente['cartao']['noInterestInstallmentQuantity'] . ",
+							success: function(response) {
+								$('#pagseguro_cartao_parcela').html('');
+								
+								
+								console.log(bandeira);
+								console.log(response.installments);
+								response.installments[bandeira].forEach((p) => {
+									//Adiciona parcelas possíveis no SELECT
+									let texto = '(R$' + p.totalAmount + ') ' +  p.quantity + 'x de R$' + p.installmentAmount;
+									$('#pagseguro_cartao_parcela').append(new Option(texto, p.quantity+'-'+p.installmentAmount));	
+								});
+							},
+							error: function(response) { console.log(response); }
 						});
-					},
-					error: function(response) { console.log(response); }
-				});
+					});
+				}
+				PagSeguroAtualizaParcela();
 			</script>";
 
 			//Botão para concluir a compra
