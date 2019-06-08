@@ -266,7 +266,6 @@ class PagSeguroAssinaturas extends PagSeguroBase {
 		if ($response['http_code'] == 200) {
 			return $response['body']['code'];
 		} else {
-			print_r($response);die;
 			throw new \Exception(current($response['body']['errors']));
 		}
 	}
@@ -484,7 +483,7 @@ class PagSeguroAssinaturas extends PagSeguroBase {
 		return $this;
 	}
 
-		/**
+	/**
 	* @param $nomeCliente string
 	*/
 	public function setNomeCliente($nomeCliente) {
