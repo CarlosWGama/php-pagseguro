@@ -7,7 +7,7 @@ use CWG\PagSeguro\PagSeguroBase;
 * @category Pagamento Único
 * @author Carlos W. Gama (carloswgama@gmail.com)
 * @license MIT
-* @version 3.0.0
+* @version 3.1.0
 * @since 3.0.0
 * Classe de pagamento único no PagSeguro
 */
@@ -544,8 +544,32 @@ class PagSeguroCompras extends PagSeguroBase {
 			throw new \Exception($response);
 		}
 	}
- 
+
+	/** Cancela a Compra ainda não aprovada
+	 * @param $codePagSeguro Código da Transação do PagSeguro
+	 */
+	public function cancelar($codePagSeguro) {
+		$response = $this->post($this->getURLAPI('v2/transactions/cancels'), array('transactionCode' => $codePagSeguro));
+		
+		//Retorno
+		if (isset($response->error)) throw new \Exception($response->error->message);
+		else return true;
+	}
 	
+	/** Estorna a compra 
+	 * @param $codePagSeguro Codigo de Transação do PagSeguro
+	 * @param $valor (opcional) A quantia que deseja estornar. Caso não seja informado, pega todo valor
+	 */
+	public function estornar($codePagSeguro, $valor = null) {
+		$dados['transactionCode'] = $codePagSeguro;
+		if (!empty($valor))
+			$dados['refundValue'] = $valor;
+		$response = $this->post($this->getURLAPI('v2/transactions/refunds'), $dados);
+		
+		//Retorno
+		if (isset($response->error)) throw new \Exception($response->error->message);
+		else return true;
+	}
 	
 	// =================================================================
 	// Util

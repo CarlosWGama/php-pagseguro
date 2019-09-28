@@ -173,6 +173,57 @@ $referencia = 'CWG004'; //È o código gerado no seu site ao criar a solicitaç�
 $response = $pagseguro->consultarCompraByReferencia($referencia);
 print_r($response);
 ```
+
+
+## Cancelar compra não aprovada
+Apenas compras que ainda não foram pagas e nem canceladas podem ser canceladas. 
+Por tanto, apenas é possível cancelar compras com o status: Aguardando pagamento (1) ou Em análise (2) 
+``` php
+<?php
+require_once(dirname(__FILE__).'/vendor/autoload.php');
+use CWG\PagSeguro\PagSeguroCompras;
+
+$email = "carloswgama@gmail.com";
+$token = "33D43C3F884E4EB687C2C62BB92ECD6A";
+$sandbox = true;
+
+$pagseguro = new PagSeguroCompras($email, $token, $sandbox);
+
+$codigoTransacao = 'D76FB9C45A7848888094BBA4C3718BC9';
+//cancelando
+try {
+    $pagseguro->cancelar($codigoTransacao);
+} catch(Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+## Estornando compra já aprovada 
+Apenas é possível estornar compra que tenha sido concluída com sucesso.
+Por tanto com os status: Paga (3) Disponível (4) ou Em Disputa (5) 
+
+``` php
+<?php
+require_once(dirname(__FILE__).'/vendor/autoload.php');
+use CWG\PagSeguro\PagSeguroCompras;
+
+$email = "carloswgama@gmail.com";
+$token = "33D43C3F884E4EB687C2C62BB92ECD6A";
+$sandbox = true;
+
+$pagseguro = new PagSeguroCompras($email, $token, $sandbox);
+
+$codigoTransacao = 'D76FB9C45A7848888094BBA4C3718BC9';
+try {
+    //Estornando
+    $pagseguro->estornar($codigoTransacao);
+
+    //Opcionalmente pode informar a quantia a estornar (Ex: R$ 178,99). Senão informado, estorna todo valor
+    //$pagseguro->estornar($codigoTransacao, 178.99);
+} catch(Exception $e) {
+    echo $e->getMessage();
+}
+```
 ---
 **Autor:**  Carlos W. Gama *(carloswgama@gmail.com)*
 **Licença:** MIT
