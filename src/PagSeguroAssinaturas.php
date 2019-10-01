@@ -8,7 +8,7 @@ use CWG\PagSeguro\PagSeguroBase;
 * @category Assinatura
 * @author Carlos W. Gama (carloswgama@gmail.com)
 * @license MIT
-* @version 3.0.0
+* @version 3.1.1
 * @since 3.0.0
 * Classe de pagamento de Recursivo/Assinaturas no PagSeguro
 */
@@ -291,7 +291,7 @@ class PagSeguroAssinaturas extends PagSeguroBase {
 		if ($response['http_code'] == 200) {
 			return $response['body']['code'];
 		} else {
-			throw new \Exception(current($response['body']['errors']));
+			throw new \Exception(current($response['body']['errors']), key($response['body']['errors']));
 		}
 	}
 
