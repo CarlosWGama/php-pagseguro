@@ -231,6 +231,7 @@ $pagseguro->setEmailCliente("c73062863531198591643@sandbox.pagseguro.com.br");
 $pagseguro->setTelefone('11', '999999999');
 //Informa o CPF
 $pagseguro->setCPF('11111111111');
+//$pagseguro->setCNPJ('74345378000163'); //Ou CNPJ
 
 //Infora o Hash  gerado na página anterior (compra_completa.php), é obrigatório para comunicação com checkoutr transparente
 $pagseguro->setHashCliente($_POST['hash']);

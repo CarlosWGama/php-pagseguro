@@ -19,7 +19,7 @@ $pagseguro->habilitaBoleto(false)
 $urlFinalizar = 'http://localhost/pagseguro/examples/compra/checkout-transparente/finalizar_compra.php';
 
 //JavaScript opcional para realizar ao receber os dados de retorno da URL final
-$jsOpcional = 'alert("Alerta do $jsOpcional"); if (response.success) alert("URL Pagamento: " + response.url);';
+$jsOpcional = 'console.log(response); if (response.success) alert("URL Pagamento: " + response.url);';
 
 //Informa URL para completar a compra, JS (opcional) a ser feito e TRUE (OPCIONAL) caso queira importar JQuery
 $js = $pagseguro->preparaCheckoutTransparente($urlFinalizar, $jsOpcional, true);

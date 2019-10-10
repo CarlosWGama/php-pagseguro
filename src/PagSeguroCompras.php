@@ -7,7 +7,7 @@ use CWG\PagSeguro\PagSeguroBase;
 * @category Pagamento Único
 * @author Carlos W. Gama (carloswgama@gmail.com)
 * @license MIT
-* @version 3.1.0
+* @version 3.2.0
 * @since 3.0.0
 * Classe de pagamento único no PagSeguro
 */
@@ -66,7 +66,6 @@ class PagSeguroCompras extends PagSeguroBase {
 		'cliente' => [
 			'senderName' 	=> '',
 			'senderEmail'	=> '',
-			'senderCPF'		=> '',
 			'senderHash'	=> '',
 			'senderAreaCode'=> '',
 			'senderPhone'	=> '',
@@ -451,7 +450,7 @@ class PagSeguroCompras extends PagSeguroBase {
 		$dados = array();
 		//Dados do cliente
 		$dados = array_merge($this->checkoutTransparente['cliente'], $dados);
-		
+
 		//Itens
 		foreach ($this->itens as $itens) {
 			foreach ($itens as $key => $value)
@@ -729,9 +728,20 @@ class PagSeguroCompras extends PagSeguroBase {
 	
 	/** Seta o CPF do Cliente **/
 	public function setCPF($cpf) {
+		//CNPJ passado ao invés de CPF
+		if (strlen($cpf) == 14) return $this->setCNPJ($cpf);
+		
 		$this->checkoutTransparente['cliente']['senderCPF'] = $cpf;
 		$this->checkoutTransparente['cartao']['creditCardHolderCPF'] = $cpf;
+		return $this;
+	}
 
+	/** Seta o CNPJ do Cliente **/
+	public function setCNPJ($cnpj) {
+		//CPF passado ao invés de CNPJ
+		if (strlen($cnpj) == 11) return $this->setCPF($cnpj);
+
+		$this->checkoutTransparente['cliente']['senderCNPJ'] = $cnpj;
 		return $this;
 	}
 

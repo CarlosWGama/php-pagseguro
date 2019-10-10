@@ -237,6 +237,7 @@ $pagseguro->setEmailCliente("c73062863531198591643@sandbox.pagseguro.com.br");
 $pagseguro->setTelefone('11', '999999999');
 //Informa o CPF
 $pagseguro->setCPF('11111111111');
+//$pagseguro->setCNPJ('74345378000163'); //Ou CPNJ 
 //Informa o endereço RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP
 $pagseguro->setEnderecoCliente('Rua C', '99', 'COMPLEMENTO', 'BAIRRO', 'São Paulo', 'SP', '57000000');
 //Informa o ano de nascimento

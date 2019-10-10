@@ -8,7 +8,7 @@ use CWG\PagSeguro\PagSeguroBase;
 * @category Assinatura
 * @author Carlos W. Gama (carloswgama@gmail.com)
 * @license MIT
-* @version 3.1.1
+* @version 3.2.0
 * @since 3.0.0
 * Classe de pagamento de Recursivo/Assinaturas no PagSeguro
 */
@@ -502,11 +502,18 @@ class PagSeguroAssinaturas extends PagSeguroBase {
 	}
 
 
-	/** Seta o CPF do Cliente **/
+	/** Seta o CPF/CNPJ do Cliente **/
 	public function setCPF($numero) {
 		$this->cliente['documents'][0]['value'] = $numero;
 		$this->formaPagamento['creditCard']['holder']['documents'][0]['value'] = $numero;
 		return $this;
+	}
+
+	/** Seta o CPF/CNPJ do Cliente 
+	 * @since 3.2.0
+	 **/
+	public function setCNPJ($numero) {
+		return $this->setCPF($numero);
 	}
 
 	/**
