@@ -144,7 +144,7 @@ class PagSeguroAssinaturas extends PagSeguroBase {
 	* @var array
 	*/
 	private $expiracao = array(
-		'value' => 1000000,
+		'value' => 999, // LIMITE ATUAL DO PAGSEGURO PARA EXPIRATION TIME 
 		'unit'	=> 'YEARS' //YEARS|MONTHS|DAYS
 	);
 
