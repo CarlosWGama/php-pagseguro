@@ -18,11 +18,11 @@ Esse código é exclusivos para assinaturas ou compras recursisvas e foi criado 
 
 Para gerar o Token da sua conta do PagSeguro, logar na conta, ir em [Minha Conta >> Preferências >> Integração](https://pagseguro.uol.com.br/preferencias/integracoes.jhtml) e solicar para gerar um token
 
-![Token em produção](http://carloswgama.com.br/pagseguro/pagseguro_gerar_token.jpg)
+![Token em produção](./../../docs/doc_1.jpeg)
 
 No Sandbox para testes, seu token pode ser acessado em [Perfil de Integração >> Vendedor](https://sandbox.pagseguro.uol.com.br/vendedor/configuracoes.html)
 
-![Token no Sandbox](http://carloswgama.com.br/pagseguro/pagseguro_gerar_token_sandbox.jpg)
+![Token no Sandbox](./../../docs/doc_2.jpeg)
 
 ## Baixando o projeto
 
